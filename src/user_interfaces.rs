@@ -69,10 +69,10 @@ pub fn main_ui(frame: &mut Frame, app: &mut App) {
 	let chunks = Layout::default()
 		.direction(Direction::Vertical)
 		.constraints([
-			Constraint::Percentage(15),
-			Constraint::Percentage(8),
-			Constraint::Percentage(7),
-			Constraint::Percentage(70),
+			Constraint::Length(9),
+			Constraint::Length(5),
+			Constraint::Length(5),
+			Constraint::Min(1),
 		])
 		.split(frame.area());
 	let title_paragraph = Paragraph::new(display_title())
