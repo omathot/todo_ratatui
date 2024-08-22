@@ -69,7 +69,10 @@ pub fn handle_events(app: &mut App) -> io::Result<bool> {
 					},
 					InputMode::Popup => match key.code {
 						KeyCode::Esc => {app.input_mode = InputMode::Select; app.show_todo_popup = false}
-						KeyCode::Char('i') => app.input_mode = InputMode::PopupInput,
+						KeyCode::Char('i') => {
+							app.popup_input = app.todo_list.get_todo_body(app.todo_list_index).unwrap_or_else(|| " ".to_string());
+							app.input_mode = InputMode::PopupInput;
+						}
 						_ => {}
 					}
 					InputMode::PopupInput => match key.code {
