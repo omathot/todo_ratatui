@@ -4,7 +4,7 @@
 This is an introductory project to the Ratatui library to learn some terminal user interfaces and improve my Rust knowledge. I do not recommend anyone to seriously use this as a Todo App.
 
 
-**What it is** 
+# What it is
 
 It is a terminal user interface Todo App, with a nice opening Ascii Art screen, Ascii Art title, dynamic input help based on InputMode, and a popup system to edit and view the body of TodoItems.
 
