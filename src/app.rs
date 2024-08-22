@@ -30,6 +30,7 @@ pub struct App {
 	pub todo_list: TodoList,
 	pub todo_list_state: ListState,
 	pub todo_list_index: usize,
+	pub show_todo_popup: bool,
 }
 
 impl App {
@@ -44,6 +45,7 @@ impl App {
 			todo_list: TodoList::new(),
 			todo_list_state: ListState::default(),
 			todo_list_index: 0,
+			show_todo_popup: false,
 		}
 	}
 
@@ -64,19 +66,6 @@ impl App {
 		let cursor_moved_right = self.cursor_index.saturating_add(1);
 		self.cursor_index = self.clamp_cursor(cursor_moved_right);
 	}
-
-	// pub fn move_cursor_down(&mut self) {
-	// 	if !self.todo_list.is_empty() {
-	// 		let new_index = self.todo_list_index.saturating_add(1);
-	// 		self.todo_list_index = new_index.min(self.todo_list.len() - 1);
-	// 	}
-	// }
-
-	// pub fn move_cursor_up(&mut self) {
-	// 	if !self.todo_list.is_empty() {
-	// 		self.todo_list_index = self.todo_list_index.saturating_sub(1);
-	// 	}
-	// }
 
 	pub fn enter_char(&mut self, new_char: char) {
         let index = self.byte_index();

@@ -1,7 +1,7 @@
 use itertools::izip;
 use ratatui::{
     prelude::*,
-    widgets::{Block, Borders, Paragraph},
+    widgets::{Block, Clear, Borders, Paragraph},
 };
 use crate::app::{App, InputMode};
 use indoc::indoc;
@@ -66,6 +66,7 @@ pub fn startup_ui(frame: &mut Frame) {
 }
 
 pub fn main_ui(frame: &mut Frame, app: &mut App) {
+	let area = frame.area();
 	let chunks = Layout::default()
 		.direction(Direction::Vertical)
 		.constraints([
@@ -186,6 +187,30 @@ pub fn main_ui(frame: &mut Frame, app: &mut App) {
 	} else {
 		frame.render_widget(todo_list, chunks[3]);
 	}
+
+	if app.show_todo_popup {
+		let block = Block::bordered().title("Popup");
+		let area = centered_rect(60, 20, area);
+		frame.render_widget(Clear, area);
+		frame.render_widget(block, area);
+	}
 }
 
 pub fn leave() {}
+
+
+fn centered_rect(percent_x: u16, percent_y: u16, r: Rect) -> Rect {
+	let popup_layout = Layout::vertical([
+		Constraint::Percentage((100 - percent_y) / 2),
+		Constraint::Percentage(percent_y),
+		Constraint::Percentage((100 - percent_y) / 2),
+	])
+	.split(r);
+
+	Layout::horizontal([
+		Constraint::Percentage((100 - percent_x) / 2),
+		Constraint::Percentage(percent_x),
+		Constraint::Percentage((100 - percent_x) / 2),
+	])
+	.split(popup_layout[1])[1]
+}

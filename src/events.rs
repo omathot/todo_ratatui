@@ -20,6 +20,10 @@ pub fn handle_events(app: &mut App) -> io::Result<bool> {
 					KeyCode::Up => app.previous_todo(),
 					KeyCode::Down => app.next_todo(),
 					KeyCode::Esc | KeyCode::Char('q') => app.input_mode = InputMode::Visual,
+					KeyCode::Enter => {
+						if !app.show_todo_popup {app.show_todo_popup = true}
+						else {app.show_todo_popup = false}
+					}
 					KeyCode::Char('d') => {
 						app.todo_list.remove_todo(app.todo_list_index);
 					}
@@ -30,7 +34,7 @@ pub fn handle_events(app: &mut App) -> io::Result<bool> {
 				}
 				InputMode::Input if key.kind == KeyEventKind::Press => match key.code {
 					KeyCode::Enter => {
-						if !app.input.is_empty() {
+						if !app.input.is_empty() && !app.todo_list.contains_title(&app.input) {
 							app.submit_new_todo();
 							app.input.clear();
 							app.reset_cursor();
