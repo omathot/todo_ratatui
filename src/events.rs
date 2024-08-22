@@ -7,7 +7,20 @@ pub fn handle_events(app: &mut App) -> io::Result<bool> {
         if let Event::Key(key) = event::read()? {
 			match app.input_mode {
 				InputMode::Visual => match key.code {
-					KeyCode::Char('q') => return Ok(true),
+					KeyCode::Char('q') => {
+						match app.todo_list.save_to_file(".todo_temp.json") {
+							Ok(()) => {
+								println!("Successfuly saved todos in temp file");
+							}
+							Err(e) => {
+								match e.kind() {
+									io::ErrorKind::PermissionDenied => println!("Permission denied, check permissions"),
+									_ => println!("Error saving todos: {}", e),
+								};
+							}
+						}
+						return Ok(true);
+					}
 					KeyCode::Char('n') => app.input_mode = InputMode::Input,
 					KeyCode::Up | KeyCode::Down => {
 						if !app.todo_list.is_empty() {
@@ -62,6 +75,15 @@ pub fn handle_events(app: &mut App) -> io::Result<bool> {
 				InputMode::PopupInput if key.kind == KeyEventKind::Press => match key.code {
 					KeyCode::Char(to_insert) => {
 						app.enter_char(to_insert);
+					}
+					KeyCode::Enter => {
+						if !app.popup_input.is_empty() {
+							app.todo_list.update_todo(app.todo_list_index, None, Some(app.popup_input.clone()));
+							app.popup_input.clear();
+							app.reset_cursor();
+							app.input_mode = InputMode::Select;
+							app.show_todo_popup = false;
+						}
 					}
 					KeyCode::Backspace => app.delete_char(),
 					KeyCode::Left => app.move_cursor_left(),

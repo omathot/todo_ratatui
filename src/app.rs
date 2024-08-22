@@ -1,4 +1,4 @@
-use std::time::{Duration, Instant};
+use std::{path::Path, time::{Duration, Instant}};
 
 use ratatui::widgets::ListState;
 use crate::todo::TodoList;
@@ -38,6 +38,7 @@ pub struct App {
 
 impl App {
 	pub fn new() -> Self {
+		let todo_list = Self::load_or_create_todo_list();
 		App {
 			state: State::Startup,
 			start_time: Instant::now(),
@@ -45,11 +46,32 @@ impl App {
 			cursor_index: 0,
 			input_mode: InputMode::Visual,
 			input: String::new(),
-			todo_list: TodoList::new(),
+			todo_list,						// USING SHORTHAND FOR THIS ONE ONLY IN THIS CASE, can be confusing
 			todo_list_state: ListState::default(),
 			todo_list_index: 0,
 			show_todo_popup: false,
 			popup_input: String::new(),
+		}
+	}
+
+	fn load_or_create_todo_list() -> TodoList {
+		let filename = ".todo_temp.json";
+		let exists = Path::try_exists(Path::new(filename));
+		match exists {
+			Ok(true) => {
+				match TodoList::load_from_file(filename) {
+                    Ok(loaded_list) => loaded_list,
+					Err(e) => {println!("Error loading from file {}", e); TodoList::new()}
+				}
+			}
+			Ok(false) => {
+				println!("File not found");
+				TodoList::new()
+			}
+			Err(e) => {
+				println!("Error checking for file existence");
+				TodoList::new()
+			}
 		}
 	}
 

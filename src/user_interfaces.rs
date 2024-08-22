@@ -190,22 +190,35 @@ pub fn main_ui(frame: &mut Frame, app: &mut App) {
 	}
 
 	if app.show_todo_popup {
-		let popup = Paragraph::new(app.popup_input.as_str())
-		.style(Style::default())
-		.block(Block::bordered().title( match app.input_mode {
-			InputMode::Popup => "Body",
-			InputMode::PopupInput => "Input",
-			_ => " Should not appear ",
-		}))
-		.add_modifier(Modifier::RAPID_BLINK);
-		let area = centered_rect(60, 20, area);
-		frame.render_widget(Clear, area);
-		frame.render_widget(popup, area);
-		if app.input_mode == InputMode::PopupInput {
-			frame.set_cursor_position(Position {
-				x: area.x + app.cursor_index as u16 + 1,
-				y: area.y + 1,
-			});
+		match app.input_mode {
+			InputMode::Popup => {
+				let mut popup_text = String::new();
+				if app.todo_list.get_todo_body(app.todo_list_index) == None {
+					popup_text = String::from("Press i to start writing Todo's details");
+				} else {
+					popup_text = String::from(app.todo_list.get_todo_body(app.todo_list_index).unwrap_or_else(||"Empty body".to_string()));
+				}
+				let popup = Paragraph::new(popup_text)
+				.style(Style::default())
+				.block(Block::bordered().title("Todo Body"));
+				let area = centered_rect(60, 20, area);
+				frame.render_widget(Clear, area);
+				frame.render_widget(popup, area);
+			},
+			InputMode::PopupInput => {
+				let popup = Paragraph::new(app.popup_input.as_str())
+				.style(Style::default().fg(Color::Yellow))
+				.block(Block::bordered().title("Edit"))
+				.add_modifier(Modifier::RAPID_BLINK);
+				let area = centered_rect(60, 20, area);
+				frame.render_widget(Clear, area);
+				frame.render_widget(popup, area);
+				frame.set_cursor_position(Position {
+					x: area.x + app.cursor_index as u16 + 1,
+					y: area.y + 1,
+				});
+			},
+			_ => {}
 		}
 	}
 }
