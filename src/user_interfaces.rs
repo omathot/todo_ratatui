@@ -56,7 +56,7 @@ pub fn startup_ui(frame: &mut Frame) {
 		.constraints([
 			Constraint::Percentage(40),
 			Constraint::Length(8),
-			Constraint::Percentage(40)
+			Constraint::Percentage(40),
 		])
 		.split(frame.area());
 	let logo_paragraph = Paragraph::new(logo())
@@ -71,7 +71,7 @@ pub fn main_ui(frame: &mut Frame, app: &mut App) {
 		.constraints([
 			Constraint::Length(9),
 			Constraint::Length(5),
-			Constraint::Length(5),
+			Constraint::Length(3),
 			Constraint::Min(1),
 		])
 		.split(frame.area());

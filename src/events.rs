@@ -9,7 +9,11 @@ pub fn handle_events(app: &mut App) -> io::Result<bool> {
 				InputMode::Visual => match key.code {
 					KeyCode::Char('q') => return Ok(true),
 					KeyCode::Char('n') => app.input_mode = InputMode::Input,
-					KeyCode::Up | KeyCode::Down => app.input_mode = InputMode::Select,
+					KeyCode::Up | KeyCode::Down => {
+						if !app.todo_list.is_empty() {
+							app.input_mode = InputMode::Select;
+						}
+					}
 					_ => {}
 				},
 				InputMode::Select => match key.code {
@@ -32,7 +36,7 @@ pub fn handle_events(app: &mut App) -> io::Result<bool> {
 							app.reset_cursor();
 							app.input_mode = InputMode::Visual;
 						}
-					} 
+					}
 					KeyCode::Char(to_insert) => {
 						app.enter_char(to_insert);
 					}

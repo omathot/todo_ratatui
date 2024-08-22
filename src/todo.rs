@@ -140,6 +140,10 @@ impl TodoList {
 		self.todos.iter().filter(|&todo|!todo.completed()).collect()
 	}
 
+	pub fn contains_title(&self, title: &str) -> bool {
+		self.todos.iter().any(|todo| todo.title == title)
+	}
+
 	pub fn update_todo(&mut self, idx: usize, title: Option<String>, body: Option<String>) -> bool {
         if let Some(todo) = self.todos.get_mut(idx) {
 			if let Some(new_title) = title {
@@ -164,7 +168,7 @@ impl TodoList {
 				let content = Line::from(vec![
 					Span::styled(
                         format!("{}: [{}] ", i, status),
-                        Style::default().fg(Color::Yellow)
+						Style::default().fg(Color::Yellow),
                     ),
 					Span::raw(todo.title()),
 					Span::styled(
