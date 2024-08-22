@@ -65,7 +65,7 @@ impl App {
 				}
 			}
 			Ok(false) => {
-				println!("File not found");
+				// println!("File not found");
 				TodoList::new()
 			}
 			Err(e) => {
