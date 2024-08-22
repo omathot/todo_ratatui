@@ -21,8 +21,7 @@ pub fn handle_events(app: &mut App) -> io::Result<bool> {
 					KeyCode::Down => app.next_todo(),
 					KeyCode::Esc | KeyCode::Char('q') => app.input_mode = InputMode::Visual,
 					KeyCode::Enter => {
-						if !app.show_todo_popup {app.show_todo_popup = true}
-						else {app.show_todo_popup = false}
+						if !app.show_todo_popup {app.show_todo_popup = true; app.input_mode = InputMode::Popup}
 					}
 					KeyCode::Char('d') => {
 						app.todo_list.remove_todo(app.todo_list_index);
@@ -55,6 +54,22 @@ pub fn handle_events(app: &mut App) -> io::Result<bool> {
 					_ => {},
 				},
 				InputMode::Input => {}
+				InputMode::Popup => match key.code {
+					KeyCode::Esc => {app.input_mode = InputMode::Select; app.show_todo_popup = false}
+					KeyCode::Char('i') => app.input_mode = InputMode::PopupInput,
+					_ => {}
+				}
+				InputMode::PopupInput if key.kind == KeyEventKind::Press => match key.code {
+					KeyCode::Char(to_insert) => {
+						app.enter_char(to_insert);
+					}
+					KeyCode::Backspace => app.delete_char(),
+					KeyCode::Left => app.move_cursor_left(),
+					KeyCode::Right => app.move_cursor_right(),
+					KeyCode::Esc => app.input_mode = InputMode::Popup,
+					_ => {}
+				}
+				InputMode::PopupInput => {}
 			}
         }
     }

@@ -144,6 +144,10 @@ impl TodoList {
 		self.todos.iter().any(|todo| todo.title == title)
 	}
 
+	pub fn get_todo_body(&self, idx: usize) -> Option<String> {
+		self.todos.get(idx).and_then(|todo| todo.body.clone())
+	}
+
 	pub fn update_todo(&mut self, idx: usize, title: Option<String>, body: Option<String>) -> bool {
         if let Some(todo) = self.todos.get_mut(idx) {
 			if let Some(new_title) = title {

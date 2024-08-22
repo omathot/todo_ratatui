@@ -122,7 +122,7 @@ pub fn main_ui(frame: &mut Frame, app: &mut App) {
 				],
 				Style::default(),
 			),
-		InputMode::Select => (
+		InputMode::Select | InputMode::Popup | InputMode::PopupInput => (
 			vec![
 				Line::from(vec![
 					Span::styled("• ", Style::default().fg(Color::Yellow)),
@@ -163,6 +163,7 @@ pub fn main_ui(frame: &mut Frame, app: &mut App) {
 			InputMode::Visual => Style::default(),
 			InputMode::Input => Style::default().fg(Color::Yellow),
 			InputMode::Select => Style::default(),
+			InputMode::Popup | InputMode::PopupInput => Style::default(),
 		})
 		.block(Block::bordered().title("Input"))
 		.add_modifier(Modifier::RAPID_BLINK);
@@ -175,7 +176,7 @@ pub fn main_ui(frame: &mut Frame, app: &mut App) {
 				y: chunks[2].y + 1,
 			});
 		}
-		InputMode::Select => {}
+		InputMode::Select | InputMode::Popup | InputMode::PopupInput => {}
 	}
 	let todo_list = app.todo_list.create_list_widget();
 
@@ -189,10 +190,23 @@ pub fn main_ui(frame: &mut Frame, app: &mut App) {
 	}
 
 	if app.show_todo_popup {
-		let block = Block::bordered().title("Popup");
+		let popup = Paragraph::new(app.popup_input.as_str())
+		.style(Style::default())
+		.block(Block::bordered().title( match app.input_mode {
+			InputMode::Popup => "Body",
+			InputMode::PopupInput => "Input",
+			_ => " Should not appear ",
+		}))
+		.add_modifier(Modifier::RAPID_BLINK);
 		let area = centered_rect(60, 20, area);
 		frame.render_widget(Clear, area);
-		frame.render_widget(block, area);
+		frame.render_widget(popup, area);
+		if app.input_mode == InputMode::PopupInput {
+			frame.set_cursor_position(Position {
+				x: area.x + app.cursor_index as u16 + 1,
+				y: area.y + 1,
+			});
+		}
 	}
 }
 

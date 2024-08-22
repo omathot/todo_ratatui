@@ -17,6 +17,8 @@ pub enum InputMode {
 	Visual,
 	Input,
 	Select,
+	Popup,
+	PopupInput,
 }
 
 #[derive(Debug)]
@@ -31,6 +33,7 @@ pub struct App {
 	pub todo_list_state: ListState,
 	pub todo_list_index: usize,
 	pub show_todo_popup: bool,
+	pub popup_input: String,
 }
 
 impl App {
@@ -46,6 +49,7 @@ impl App {
 			todo_list_state: ListState::default(),
 			todo_list_index: 0,
 			show_todo_popup: false,
+			popup_input: String::new(),
 		}
 	}
 
@@ -70,21 +74,48 @@ impl App {
 	pub fn enter_char(&mut self, new_char: char) {
         let index = self.byte_index();
 		if index < MAX_CHARS {
-			self.input.insert(index, new_char);
-			self.move_cursor_right();
+			match self.input_mode {
+				InputMode::Input => {
+					self.input.insert(index, new_char);
+					self.move_cursor_right();
+				}
+				InputMode::PopupInput => {
+					self.popup_input.insert(index, new_char);
+					self.move_cursor_right();
+				}
+				_ => {}
+			}
 		}
     }
 	
 	pub fn byte_index(&mut self) -> usize {
-        self.input
-            .char_indices()
-            .map(|(i, _)| i)
-            .nth(self.cursor_index)
-            .unwrap_or(self.input.len())
+		match self.input_mode {
+			InputMode::Input => {
+				self.input
+					.char_indices()
+					.map(|(i, _)| i)
+					.nth(self.cursor_index)
+					.unwrap_or(self.input.len())
+			}
+			InputMode::PopupInput => {
+				self.popup_input
+					.char_indices()
+					.map(|(i, _)| i)
+					.nth(self.cursor_index)
+					.unwrap_or(self.popup_input.len())
+			}
+			_ => 0
+		}
     }
 
 	pub fn clamp_cursor(&self, new_cursor_pos: usize) -> usize {
-		new_cursor_pos.clamp(0, self.input.chars().count())
+		if self.input_mode == InputMode::Input {
+			new_cursor_pos.clamp(0, self.input.chars().count())
+		}
+		else if self.input_mode == InputMode::PopupInput {
+			new_cursor_pos.clamp(0, self.popup_input.chars().count())
+		}
+		else {0}
 	}
 
 	pub fn clamp_todo_list_index(&self, idx: usize) -> usize {
@@ -96,12 +127,19 @@ impl App {
 		if is_not_cursor_leftmost {
 			let current_index = self.cursor_index;
 			let from_left_to_current_index = current_index - 1;
-
-			let before_char_to_delete = self.input.chars().take(from_left_to_current_index);
-			let after_char_to_delete = self.input.chars().skip(current_index);
-
-			self.input = before_char_to_delete.chain(after_char_to_delete).collect();
-			self.move_cursor_left();
+			if self.input_mode == InputMode::Input {
+				let before_char_to_delete = self.input.chars().take(from_left_to_current_index);
+				let after_char_to_delete = self.input.chars().skip(current_index);
+				self.input = before_char_to_delete.chain(after_char_to_delete).collect();
+				self.move_cursor_left();
+			}
+			else if self.input_mode == InputMode::PopupInput {
+				let before_char_to_delete = self.popup_input.chars().take(from_left_to_current_index);
+				let after_char_to_delete = self.popup_input.chars().skip(current_index);
+				self.popup_input = before_char_to_delete.chain(after_char_to_delete).collect();
+				self.move_cursor_left();
+			}
+			else {}
 		}
 	}
 
