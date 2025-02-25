@@ -3,6 +3,10 @@
 
 This is an introductory project to the Ratatui library to learn some terminal user interfaces and improve my Rust knowledge. I do not recommend anyone to seriously use this as a Todo App.
 
+<video width="640" height="360" controls>
+  <source src="https://drive.proton.me/urls/D7QBGB282C#TCwxDWvepGxp" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
 
 # What it is
 
